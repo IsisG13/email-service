@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.isis.email_service.application.EmailSenderService;
 import com.isis.email_service.core.EmailRequest;
 import com.isis.email_service.core.exceptions.EmailServiceException;
+import com.isis.email_service.infra.MailtrapEmailSender;
 
 @RestController
 @RequestMapping("/api/email")
@@ -22,13 +23,13 @@ public class EmailSenderController {
         this.emailSenderService = emailService;
     }
 
-    @PostMapping
-    public ResponseEntity<String> sendEmail(@RequestBody EmailRequest request) {
+    @PostMapping("/simple")
+    public ResponseEntity<String> sendSimpleEmail(@RequestBody EmailRequest request) {
         try {
-            this.emailSenderService.sendEmail(request.to(), request.subject(), request.body());
-            return ResponseEntity.ok("Email send seccessfully");
+            ((MailtrapEmailSender) emailSenderService.getEmailSenderGetway()).sendSimpleEmail(request);
+            return ResponseEntity.ok("Email simples enviado com sucesso");
         } catch (EmailServiceException ex) {
-            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Error while sending email");
+            return ResponseEntity.status(HttpStatus.SC_INTERNAL_SERVER_ERROR).body("Erro ao enviar email simples");
         }
     }
 }
